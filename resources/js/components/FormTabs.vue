@@ -148,7 +148,34 @@ export default {
         },
         tabHasErrors(tab) {
             const hasErrors = Object.keys(this.errors.errors).some(key => {
-                return _.includes(tab.fields.map(o => o.attribute), key);
+                if(_.includes(tab.fields.map(o => o.attribute), key)) {
+                    return true;
+                }
+
+                let hasSubErrors = false;
+                _.each(tab.fields, (field) => {
+                    if(hasSubErrors === true) {
+                        return false;
+                    }
+                    if(_.startsWith(key, field.attribute+'[')) {
+                        hasSubErrors = true;
+                    }
+
+                    if(field.component === 'nova-dependency-container') {
+                        _.takeWhile(field.fields, (subField) => {
+                            if(subField.attribute === key) {
+                                hasSubErrors = true;
+                                return false;
+                            }
+
+                            if(_.startsWith(key, subField.attribute+'[')) {
+                                hasSubErrors = true;
+                                return false;
+                            }
+                        })
+                    }
+                })
+                return hasSubErrors;
             });
 
             tab.hasErrors = hasErrors;
