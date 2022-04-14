@@ -157,7 +157,7 @@ export default {
                     if(hasSubErrors === true) {
                         return false;
                     }
-                    if(_.startsWith(key, field.attribute+'[')) {
+                    if(_.startsWith(key, field.attribute+'[') || _.startsWith(key, field.attribute+'.')) {
                         hasSubErrors = true;
                     }
 
