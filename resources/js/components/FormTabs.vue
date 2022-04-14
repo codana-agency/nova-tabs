@@ -9,7 +9,7 @@
                 :dusk="tab.slug + '-tab'"
                 @click="handleTabClick(tab, $event)"
             >
-                <tab-title :tab="tab" />
+                <tab-title :tab="tab"/>
             </div>
             <div class="flex-1 border-b-2 border-40"></div>
         </div>
@@ -81,7 +81,7 @@ export default {
     },
     watch: {
         errors: {
-            handler: function() {
+            handler: function () {
                 for (const key of Object.keys(this.tabs)) {
                     if (this.tabHasErrors(this.tabs[key])) {
                         this.handleTabClick(this.tabs[key]);
@@ -148,33 +148,36 @@ export default {
         },
         tabHasErrors(tab) {
             const hasErrors = Object.keys(this.errors.errors).some(key => {
-                if(_.includes(tab.fields.map(o => o.attribute), key)) {
+                if (_.includes(tab.fields.map(o => o.attribute), key)) {
                     return true;
                 }
 
                 let hasSubErrors = false;
-                _.each(tab.fields, (field) => {
-                    if(hasSubErrors === true) {
+                _.takeWhile(tab.fields, (field) => {
+                    if (hasSubErrors === true) {
                         return false;
                     }
-                    if(_.startsWith(key, field.attribute+'[') || _.startsWith(key, field.attribute+'.')) {
+                    if (_.startsWith(key, field.attribute + '[') || _.startsWith(key, field.attribute + '.')) {
                         hasSubErrors = true;
+                        return false;
                     }
 
-                    if(field.component === 'nova-dependency-container') {
+                    if (field.component === 'nova-dependency-container') {
                         _.takeWhile(field.fields, (subField) => {
-                            if(subField.attribute === key) {
+                            if (subField.attribute === key) {
                                 hasSubErrors = true;
                                 return false;
                             }
 
-                            if(_.startsWith(key, subField.attribute+'[')) {
+                            if (_.startsWith(key, subField.attribute + '[') || _.startsWith(key, subField.attribute + '.')) {
                                 hasSubErrors = true;
                                 return false;
                             }
-                        })
+                            return true;
+                        });
                     }
-                })
+                    return true;
+                });
                 return hasSubErrors;
             });
 
