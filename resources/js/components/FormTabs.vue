@@ -114,7 +114,7 @@ export default {
                 slug: this.$route.query.tab,
             });
         } else {
-            this.handleTabClick(tabs[Object.keys(tabs)[0]], false);
+            this.handleTabClick(tabs[Object.keys(tabs)[0]], true);
         }
     },
     methods: {
